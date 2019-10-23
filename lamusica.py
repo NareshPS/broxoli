@@ -9,29 +9,43 @@ from argparse import ArgumentParser
 #Path manipulations
 from pathlib import Path
 
-ydl_opts = {
+audio_opts = {
     'format': 'bestaudio/best',
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
+    'outtmpl': '%(title)s.%(ext)s',
+}
+
+video_opts = {
+    'format': 'bestvideo/best',
+    'outtmpl': '%(title)s.%(ext)s'
 }
 
 def parse_args():
-    parser = ArgumentParser(description = 'It downloads the Youtube videos as mp3.')
+    parser = ArgumentParser(description = 'It downloads the content from YouTube.')
+
     parser.add_argument(
         '-i', '--input_file',
         required = True, type = Path,
         help = 'It specifies the name of the file that contains Youtube video links [One per line].')
+    parser.add_argument(
+        '--video',
+        action = 'store_true',
+        help = 'It switches to the video download.')
 
     args = parser.parse_args()
 
-    return args.input_file
+    return args.input_file, args.video
 
 if __name__ == '__main__':
     #Input parameters
-    input_file = parse_args()
+    input_file, video = parse_args()
+
+    #Derived parameters
+    ydl_opts = video_opts if video else audio_opts
 
     #Placeholder for video links
     video_links = None
